@@ -6,6 +6,9 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameView extends SurfaceView implements Runnable {
 
     private Thread thread;
@@ -14,6 +17,7 @@ public class GameView extends SurfaceView implements Runnable {
     public static float screenRatioX, screenRatioY;
     private Paint paint;
     private FlyingTamagotchi flyingTamagotchi;
+    List<FireBall> fireBalls;
     //для прокрутки заднего фона создаём 2 объекта и будем смещать их одновременно в сторону
     private GameBackground gameBackground1, gameBackground2;
 
@@ -26,7 +30,8 @@ public class GameView extends SurfaceView implements Runnable {
         gameBackground1 = new GameBackground(screenX, screenY, getResources());
         gameBackground2 = new GameBackground(screenX, screenY, getResources());
 
-        flyingTamagotchi = new FlyingTamagotchi(screenY,screenX,getResources());
+        flyingTamagotchi = new FlyingTamagotchi(this,screenY,screenX,getResources());
+        fireBalls = new ArrayList<>();
         //присваиваем положение вне видимости экрана для второго заднего фона
         gameBackground2.x=screenX;
 
@@ -70,6 +75,18 @@ public class GameView extends SurfaceView implements Runnable {
         if (flyingTamagotchi.y > screenY - flyingTamagotchi.height*2){
             flyingTamagotchi.y = screenY - flyingTamagotchi.height*2;
         }
+
+        List<FireBall> trash = new ArrayList<>();
+        for (FireBall fireBall : fireBalls){
+            if (fireBall.x > screenX){
+                trash.add((fireBall));
+            }
+            fireBall.x += 50;
+        }
+
+        for (FireBall fireBall : trash){
+            fireBalls.remove(fireBall);
+        }
     }
 
     //отрисовать новые позиции
@@ -82,6 +99,11 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(gameBackground2.background, gameBackground2.x,gameBackground2.y, paint);
             //отрисовка тамагочи
             canvas.drawBitmap(flyingTamagotchi.getFlight(), flyingTamagotchi.x,flyingTamagotchi.y,paint);
+
+            //отрисовка фаерболов
+            for (FireBall fireBall : fireBalls){
+                canvas.drawBitmap(fireBall.fireball, fireBall.x,fireBall.y,paint);
+            }
 
             //отрисовка полотна на области
             getHolder().unlockCanvasAndPost(canvas);
@@ -118,18 +140,30 @@ public class GameView extends SurfaceView implements Runnable {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
-//          когда происходит нажатие на экран
+//          ACTION_DOWN предназначен для первого пальца, который касается экрана
             case MotionEvent.ACTION_DOWN:
                 //если нажата левая часть экрана
                 if (event.getX() < screenX/2){
                     flyingTamagotchi.isGoingUp = true;
                 }
                 break;
-//          когда не происходит нажатие на экран
+//          ACTION_UP отправляется, когда последний палец покидает экран
             case  MotionEvent.ACTION_UP:
                 flyingTamagotchi.isGoingUp = false;
+                //если нажата правая часть экрана
+                if (event.getX() > screenX/2){
+                    flyingTamagotchi.toShoot++;
+                }
                 break;
         }
         return true;
+    }
+
+    //создание нового фаербола
+    public void newFireBall() {
+        FireBall fireBall = new FireBall(getResources());
+        fireBall.x = flyingTamagotchi.x + flyingTamagotchi.width/4;
+        fireBall.y = flyingTamagotchi.y + flyingTamagotchi.height/4;
+        fireBalls.add(fireBall);
     }
 }
