@@ -10,9 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tamagotchi.noActionBar"
         >
-        <activity android:name=".GameActivity"
-            android:screenOrientation="landscape"
-            ></activity>
+        <activity
+            android:name=".GameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="landscape" />
         <activity android:name=".MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -22,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TamagotchiActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:screenOrientation="landscape">
         </activity>
     </application>
