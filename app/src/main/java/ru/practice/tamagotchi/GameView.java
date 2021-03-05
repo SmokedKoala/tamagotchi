@@ -1,9 +1,16 @@
 package ru.practice.tamagotchi;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -15,20 +22,43 @@ public class GameView extends SurfaceView implements Runnable {
 
     private Thread thread;
     private boolean isPlaying, isGameOver = false;
-    private int screenX, screenY;
+    private int screenX, screenY, score = 0;
     public static float screenRatioX, screenRatioY;
     private Paint paint;
     private FlyingEnemy[] flyingEnemies;
     private Random random;
+    private SoundPool soundPool;
+    private int sound;
     private FlyingTamagotchi flyingTamagotchi;
     List<FireBall> fireBalls;
+    private GameActivity activity;
     //для прокрутки заднего фона создаём 2 объекта и будем смещать их одновременно в сторону
     private GameBackground gameBackground1, gameBackground2;
 
+//    надо изменить, так как эти методы сильно тормозят
+    private SharedPreferences preferences;
 
 
-    public GameView(Context context, int screenX, int screenY) {
-        super(context);
+
+
+
+    public GameView(GameActivity activity, int screenX, int screenY) {
+        super(activity);
+
+        preferences = activity.getSharedPreferences("mini-game", Context.MODE_PRIVATE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .build();
+            soundPool = new SoundPool.Builder().setAudioAttributes(audioAttributes).build();
+
+        } else
+            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        sound = soundPool.load(activity,R.raw.shoot,1);
+
+        this.activity = activity;
         this.screenX =screenX;
         this.screenY= screenY;
 
@@ -45,6 +75,9 @@ public class GameView extends SurfaceView implements Runnable {
         gameBackground2.x=screenX;
 
         paint = new Paint();
+
+        paint.setTextSize(128);
+        paint.setColor(Color.WHITE);
 
         flyingEnemies = new FlyingEnemy[4];
         for(int i = 0; i< flyingEnemies.length;i++){
@@ -70,7 +103,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void update(){
         //перемещение фонового изображения назад, когда оно выходит из видимости экрана
-        gameBackground1.x -= (10 * screenRatioX);
+        gameBackground1.x -= (10 );
         if (gameBackground1.x + this.screenX < 0){
             gameBackground1.x = screenX;
         }
@@ -102,6 +135,7 @@ public class GameView extends SurfaceView implements Runnable {
         for (FireBall fireBall : fireBalls){
             //когда фаербол выходит за пределы экрана - добавить его в список на удаление
             if (fireBall.x > screenX){
+//                score--;
                 trash.add((fireBall));
             }
             //иначе изменить его координату
@@ -112,6 +146,7 @@ public class GameView extends SurfaceView implements Runnable {
                 if (Rect.intersects(flyingEnemy.getUnitShape(),fireBall.getUnitShape())){
                     flyingEnemy.x = -screenX;
                     fireBall.x = screenX *2;
+                    score++;
                     flyingEnemy.wasShot = true;
                 }
             }
@@ -170,13 +205,19 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(gameBackground1.background, gameBackground1.x,gameBackground1.y, paint);
             canvas.drawBitmap(gameBackground2.background, gameBackground2.x,gameBackground2.y, paint);
 
+            canvas.drawText(score+"",screenX/2f,164,paint);
+            canvas.drawText("HighScore: "+preferences.getInt("highscore",0),0,164,paint);
+
             if(isGameOver){
                 isPlaying = false;
                 canvas.drawBitmap(flyingTamagotchi.getDeath(),flyingTamagotchi.x,flyingTamagotchi.y,paint);
+
                 for (FlyingEnemy flyingEnemy: flyingEnemies){
                     canvas.drawBitmap(flyingEnemy.getEnemy(),flyingEnemy.x,flyingEnemy.y,paint);
                 }
                 getHolder().unlockCanvasAndPost(canvas);
+                saveIfScoreTheHighest();
+                waitBeforeExiting();
                 return;
             }
 
@@ -198,7 +239,25 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
+    private void waitBeforeExiting() {
+        try {
+            Thread.sleep(3000);
+            activity.startActivity(new Intent(activity,TamagotchiActivity.class));
+            activity.finish();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
+    //метод сохранения нового результата
+    private void saveIfScoreTheHighest() {
+        if (preferences.getInt("highscore",0)<score){
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("highscore",score);
+            editor.apply();
+        }
+
+    }
 
 
     //приостановть метод
@@ -261,6 +320,10 @@ public class GameView extends SurfaceView implements Runnable {
 
     //создание нового фаербола
     public void newFireBall() {
+
+        if(!preferences.getBoolean("isMute", false))
+            soundPool.play(sound,1,1,0,0,1);
+
         FireBall fireBall = new FireBall(getResources());
         fireBall.x = flyingTamagotchi.x + flyingTamagotchi.width/4;
         fireBall.y = flyingTamagotchi.y + flyingTamagotchi.height/4;
