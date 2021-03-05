@@ -3,15 +3,20 @@ package ru.practice.tamagotchi;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 
 public class FireBall {
-    int x,y;
+    int x,y,width,height;
     Bitmap fireball;
 
     FireBall(Resources resources){
         fireball = BitmapFactory.decodeResource(resources,R.drawable.fireball);
-        int wight = fireball.getWidth()/2;
-        int height = fireball.getHeight()/2;
-        fireball = Bitmap.createScaledBitmap(fireball, wight,height,false);
+        width = fireball.getWidth()/2;
+        height = fireball.getHeight()/2;
+        fireball = Bitmap.createScaledBitmap(fireball, width,height,false);
+    }
+
+    Rect getUnitShape(){
+        return new Rect(x,y,x+width,y+height);
     }
 }

@@ -3,13 +3,17 @@ package ru.practice.tamagotchi;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+
+import static ru.practice.tamagotchi.GameView.screenRatioX;
+import static ru.practice.tamagotchi.GameView.screenRatioY;
 
 
 public class FlyingTamagotchi {
     public boolean isGoingUp = false ;
     int toShoot = 0;
     int  width, height,x, y, wingCounter = 0;
-    Bitmap flight1, flight2, attack1;
+    Bitmap flight1, flight2, attack1, dead;
     private GameView gameView;
 
     FlyingTamagotchi(GameView gameView, int screenY, int screenX, Resources res){
@@ -18,14 +22,16 @@ public class FlyingTamagotchi {
         flight1 = BitmapFactory.decodeResource(res, R.drawable.dragon_1);
         flight2 = BitmapFactory.decodeResource(res, R.drawable.dragon_2);
         attack1 = BitmapFactory.decodeResource(res, R.drawable.dragon_3);
+        dead = BitmapFactory.decodeResource(res, R.drawable.dragon_death);
 
-        width = screenX/10;
-        height = screenX/10;
+        width = (int) screenRatioX;
+        height = (int) screenRatioX;
 
 
         flight1 = Bitmap.createScaledBitmap(flight1, width, height, false);
         flight2 = Bitmap.createScaledBitmap(flight2, width, height, false);
         attack1 = Bitmap.createScaledBitmap(attack1, width, height, false);
+        dead = Bitmap.createScaledBitmap(dead, width, height, false);
 
         y = screenY/2;
         x = screenX/10;
@@ -45,5 +51,13 @@ public class FlyingTamagotchi {
         }
         wingCounter --;
         return flight2;
+    }
+
+    Rect getUnitShape(){
+        return new Rect(x,y,x+width,y+height);
+    }
+
+    Bitmap getDeath(){
+        return dead;
     }
 }
