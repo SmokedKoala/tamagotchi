@@ -3,6 +3,8 @@ package ru.practice.tamagotchi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +15,7 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class GameView extends SurfaceView implements Runnable {
     public static float screenRatioX, screenRatioY;
     private Paint paint;
     private FlyingEnemy[] flyingEnemies;
+    private Pause pause;
     private Random random;
     private SoundPool soundPool;
     private int sound;
@@ -35,7 +39,6 @@ public class GameView extends SurfaceView implements Runnable {
     //для прокрутки заднего фона создаём 2 объекта и будем смещать их одновременно в сторону
     private GameBackground gameBackground1, gameBackground2;
 
-//    надо изменить, так как эти методы сильно тормозят
     private SharedPreferences preferences;
 
 
@@ -69,15 +72,17 @@ public class GameView extends SurfaceView implements Runnable {
         gameBackground1 = new GameBackground(screenX, screenY, getResources());
         gameBackground2 = new GameBackground(screenX, screenY, getResources());
 
+
         flyingTamagotchi = new FlyingTamagotchi(this,screenY,screenX,getResources());
         fireBalls = new ArrayList<>();
+        pause = new Pause(screenY,screenX,getResources());
         //присваиваем положение вне видимости экрана для второго заднего фона
         gameBackground2.x=screenX;
 
         paint = new Paint();
 
         paint.setTextSize(128);
-        paint.setColor(Color.WHITE);
+        paint.setColor(Color.DKGRAY);
 
         flyingEnemies = new FlyingEnemy[4];
         for(int i = 0; i< flyingEnemies.length;i++){
@@ -102,6 +107,7 @@ public class GameView extends SurfaceView implements Runnable {
 
 
     private void update(){
+
         //перемещение фонового изображения назад, когда оно выходит из видимости экрана
         gameBackground1.x -= (10 );
         if (gameBackground1.x + this.screenX < 0){
@@ -202,11 +208,11 @@ public class GameView extends SurfaceView implements Runnable {
         if (getHolder().getSurface().isValid()){
             //создание полотна для области
             Canvas canvas = getHolder().lockCanvas();
+
+
             canvas.drawBitmap(gameBackground1.background, gameBackground1.x,gameBackground1.y, paint);
             canvas.drawBitmap(gameBackground2.background, gameBackground2.x,gameBackground2.y, paint);
 
-            canvas.drawText(score+"",screenX/2f,164,paint);
-            canvas.drawText("HighScore: "+preferences.getInt("highscore",0),0,164,paint);
 
             if(isGameOver){
                 isPlaying = false;
@@ -233,6 +239,11 @@ public class GameView extends SurfaceView implements Runnable {
             for (FireBall fireBall : fireBalls){
                 canvas.drawBitmap(fireBall.fireball, fireBall.x,fireBall.y,paint);
             }
+
+            canvas.drawText(score+"",screenX/2f,164,paint);
+            canvas.drawText("HighScore: "+preferences.getInt("highscore",0),0,164,paint);
+
+            canvas.drawBitmap(pause.getButton(),pause.x,pause.y,paint);
 
             //отрисовка полотна на области
             getHolder().unlockCanvasAndPost(canvas);
@@ -307,9 +318,18 @@ public class GameView extends SurfaceView implements Runnable {
 //          ACTION_UP отправляется, когда последний палец покидает экран
             case  MotionEvent.ACTION_UP:
                 flyingTamagotchi.isGoingUp = false;
+
                 //если нажата правая часть экрана
                 if (event.getX() > screenX/2){
-                    flyingTamagotchi.toShoot++;
+
+                    if (pauseIsPressed(event)){
+                        if (isPlaying == true)
+                            pause();
+                        else
+                            resume();
+
+                    } else
+                        flyingTamagotchi.toShoot++;
                 }
                 break;
         }
@@ -317,6 +337,12 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
 
+    public boolean pauseIsPressed(MotionEvent event){
+        if (pause.x<=event.getX() && event.getX()<=pause.width+pause.x && pause.y<=event.getY() && event.getY()<=pause.height+pause.y){
+            return true;
+        }
+        return false;
+    }
 
     //создание нового фаербола
     public void newFireBall() {
