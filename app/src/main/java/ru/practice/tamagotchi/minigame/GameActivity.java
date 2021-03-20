@@ -1,11 +1,12 @@
-package ru.practice.tamagotchi;
+package ru.practice.tamagotchi.minigame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
-import android.view.WindowManager;
+
+import ru.practice.tamagotchi.minigame.GameView;
 
 public class GameActivity extends AppCompatActivity {
 

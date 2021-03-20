@@ -11,7 +11,7 @@
         android:theme="@style/Theme.Tamagotchi.noActionBar"
         >
         <activity
-            android:name=".GameActivity"
+            android:name=".minigame.GameActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:screenOrientation="landscape" />
         <activity android:name=".MainActivity"
@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TamagotchiActivity"
+        <activity android:name=".tamagotchiactivity.TamagotchiActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:screenOrientation="landscape">
         </activity>

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import ru.practice.tamagotchi.tamagotchiactivity.TamagotchiActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     Button start;
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.start:
-                    intent = new Intent(MainActivity.this,TamagotchiActivity.class);
+                    intent = new Intent(MainActivity.this, TamagotchiActivity.class);
                     startActivity(intent);
             }
         }

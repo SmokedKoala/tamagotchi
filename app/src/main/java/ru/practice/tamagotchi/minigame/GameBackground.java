@@ -1,8 +1,10 @@
-package ru.practice.tamagotchi;
+package ru.practice.tamagotchi.minigame;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import ru.practice.tamagotchi.R;
 
 public class GameBackground {
 

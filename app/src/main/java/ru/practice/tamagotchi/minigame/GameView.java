@@ -1,10 +1,8 @@
-package ru.practice.tamagotchi;
+package ru.practice.tamagotchi.minigame;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,11 +13,13 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import ru.practice.tamagotchi.R;
+import ru.practice.tamagotchi.tamagotchiactivity.TamagotchiActivity;
 
 public class GameView extends SurfaceView implements Runnable {
 
@@ -59,7 +59,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         } else
             soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
-        sound = soundPool.load(activity,R.raw.shoot,1);
+        sound = soundPool.load(activity, R.raw.shoot,1);
 
         this.activity = activity;
         this.screenX =screenX;
@@ -253,7 +253,7 @@ public class GameView extends SurfaceView implements Runnable {
     private void waitBeforeExiting() {
         try {
             Thread.sleep(3000);
-            activity.startActivity(new Intent(activity,TamagotchiActivity.class));
+            activity.startActivity(new Intent(activity, TamagotchiActivity.class));
             activity.finish();
         } catch (InterruptedException e) {
             e.printStackTrace();

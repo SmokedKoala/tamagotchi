@@ -1,12 +1,14 @@
-package ru.practice.tamagotchi;
+package ru.practice.tamagotchi.minigame;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
-import static ru.practice.tamagotchi.GameView.screenRatioX;
-import static ru.practice.tamagotchi.GameView.screenRatioY;
+import ru.practice.tamagotchi.R;
+import ru.practice.tamagotchi.minigame.GameView;
+
+import static ru.practice.tamagotchi.minigame.GameView.screenRatioX;
 
 
 public class FlyingTamagotchi {

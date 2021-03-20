@@ -1,12 +1,13 @@
-package ru.practice.tamagotchi;
+package ru.practice.tamagotchi.minigame;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
-import static ru.practice.tamagotchi.GameView.screenRatioX;
-import static ru.practice.tamagotchi.GameView.screenRatioY;
+import ru.practice.tamagotchi.R;
+
+import static ru.practice.tamagotchi.minigame.GameView.screenRatioX;
 
 public class FlyingEnemy {
     public int speed = 20;
@@ -15,7 +16,7 @@ public class FlyingEnemy {
     Bitmap enemy;
 
     FlyingEnemy(Resources resources){
-        enemy = BitmapFactory.decodeResource(resources,R.drawable.ghost);
+        enemy = BitmapFactory.decodeResource(resources, R.drawable.ghost);
 
         width = (int) screenRatioX;
         height = (int) screenRatioX;

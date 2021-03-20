@@ -1,4 +1,4 @@
-package ru.practice.tamagotchi;
+package ru.practice.tamagotchi.tamagotchiactivity;
 
 import android.graphics.drawable.Drawable;
 
