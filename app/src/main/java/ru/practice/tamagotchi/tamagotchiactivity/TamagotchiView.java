@@ -19,6 +19,7 @@ public class TamagotchiView extends SurfaceView implements Runnable {
     private Paint paint;
     private TamagotchiActivity activity;
     private TamagotchiBackground tamagotchiBackground;
+    private TamagotchiUnit tamagotchiUnit;
     private boolean isPlaying;
     private boolean isMute;
     private SharedPreferences preferences;
@@ -39,6 +40,7 @@ public class TamagotchiView extends SurfaceView implements Runnable {
 
         mute = new Mute(screenY,screenX,getResources(),isMute);
         play = new Play(screenY,screenX,getResources());
+        tamagotchiUnit = new TamagotchiUnit(this,screenY,screenX,getResources());
         tamagotchiBackground = new TamagotchiBackground(screenX,screenY,getResources());
     }
 
@@ -66,6 +68,7 @@ public class TamagotchiView extends SurfaceView implements Runnable {
             canvas.drawBitmap(tamagotchiBackground.background, tamagotchiBackground.x, tamagotchiBackground.y, paint);
             canvas.drawBitmap(mute.getButton(),mute.x,mute.y,paint);
             canvas.drawBitmap(play.getButton(),play.x,play.y,paint);
+            canvas.drawBitmap(tamagotchiUnit.getFlight(), tamagotchiUnit.x,tamagotchiUnit.y,paint);
 
             //отрисовка полотна на области
             getHolder().unlockCanvasAndPost(canvas);

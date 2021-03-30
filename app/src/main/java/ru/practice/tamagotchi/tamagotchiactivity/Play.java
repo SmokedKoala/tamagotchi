@@ -16,7 +16,7 @@ public class Play {
         height = screenX/10;
         x = screenX*0.08f;
         y = screenY*0.65f;
-        play = BitmapFactory.decodeResource(res, R.drawable.play_button);
+        play = BitmapFactory.decodeResource(res, R.drawable.play);
         play = Bitmap.createScaledBitmap(play,width,height,false);
     }
     public Bitmap getButton(){
